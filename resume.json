@@ -1,0 +1,85 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+  "basics": {
+    "name": "Felipe García Vidal",
+    "label": "Ingeniero de telecomunicaciones especializado en telemática",
+    "image": "https://media.licdn.com/dms/image/v2/D4D03AQEtNrwdGBnT_A/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1701798196371?e=1784160000&v=beta&t=xeodsP8hFa6HBU15wFG1NhJl97W71xT4i7B31Mr1QWc",
+    "email": "felipegv2204@gmail.com",
+    "url": "",
+    "summary": "Como estudiante de doctorado en Tecnologías de la Información y Comunicaciones en la Universidad Politécnica de Cartagena, investigo la optimización y el control de tecnologías de acceso en redes vehiculares. Me motiva trabajar en entornos dinámicos y desafiantes orientados al aprendizaje continuo y la innovación, siempre abierto a nuevas colaboraciones con profesionales del sector tecnológico. A largo plazo, mi objetivo es fusionar la investigación con la innovación aplicada para contribuir al desarrollo de soluciones tecnológicas sostenibles y de alto impacto.",
+    "location": { "city": "Murcia", "countryCode": "ES" },
+    "profiles": [
+      { "network": "GitHub", "username": "Felipin2204", "url": "https://github.com/Felipin2204" },
+      { "network": "LinkedIn", "username": "Felipe García Vidal", "url": "https://www.linkedin.com/in/felipe-garc%C3%ADa-vidal-312a5a233/" }
+    ]
+  },
+  "work": [
+    {
+      "name": "Empresa",
+      "position": "Data Engineer",
+      "location": "Ciudad",
+      "startDate": "2023-01",
+      "highlights": [
+        "Diseño y despliegue de pipelines de datos en producción con Apache Airflow sobre un clúster Kubernetes (k3s).",
+        "Construcción de imágenes Docker personalizadas e instalación de drivers ODBC de InterSystems Caché para extracción de datos.",
+        "Orquestación de flujos paralelizados con dynamic task mapping y gestión de secretos vía Kubernetes secrets.",
+        "Implementación de pipelines Caché → InfluxDB con procesamiento concurrente para cargas de series temporales."
+      ]
+    },
+    {
+      "name": "Empresa",
+      "position": "Rol anterior",
+      "location": "Ciudad",
+      "startDate": "2021-01",
+      "endDate": "2023-01",
+      "highlights": [
+        "Logro o responsabilidad principal en este puesto.",
+        "Otro logro relevante con impacto medible si es posible.",
+        "Tecnologías y herramientas con las que trabajaste."
+      ]
+    },
+    {
+      "name": "Empresa",
+      "position": "Primer rol",
+      "location": "Ciudad",
+      "startDate": "2019-01",
+      "endDate": "2021-01",
+      "highlights": [
+        "Responsabilidad principal de tu primer puesto.",
+        "Aprendizaje o contribución destacada."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad Politécnica de Cartagena",
+      "studyType": "Grado en",
+      "area": "Ingeniería Telemática",
+      "startDate": "2018",
+      "endDate": "2023"
+    },
+    {
+      "institution": "Universidad Politécnica de Cartagena",
+      "studyType": "Máster Universitario en",
+      "area": "Ingeniería Telemática",
+      "startDate": "2023-09",
+      "endDate": "2024-09"
+    },
+    {
+      "institution": "Universidad Politécnica de Cartagena",
+      "studyType": "Doctorado en",
+      "area": "Tecnologías de la Información y Comunicaciones",
+      "startDate": "2024-12",
+      "endDate": ""
+    }
+  ],
+  "skills": [
+    { "name": "Lenguajes", "keywords": ["Python", "C++", "Java", "JavaScript", "PHP", "MATLAB"] },
+    {"name": "Desarrollo Web", "keywords": ["Vue.js", "React", "Node.js"] },
+    { "name": "Bases de datos", "keywords": ["InfluxDB", "InterSystems Caché", "PostgreSQL", "MariaDB"] },
+    { "name": "Orquestación e Infraestructura", "keywords": ["Kubernetes", "Docker Swarm", "Apache Airflow"] },
+    { "name": "Data Science & ML", "keywords": ["NumPy", "Pandas", "Matplotlib", "Scikit-learn", "SciPy", "TensorFlow"] },
+    { "name": "Herramientas", "keywords": ["Git", "Linux"] }
+  ],
+  "meta": { "theme": "felipe", "language": "es" }
+}

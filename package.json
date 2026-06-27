@@ -1,0 +1,12 @@
+{
+  "name": "felipe-cv",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "jsonresume-theme-even": "^0.26.1",
+    "puppeteer": "^23.0.0"
+  }
+}

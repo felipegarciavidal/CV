@@ -20,6 +20,11 @@ const range = (start, end) => {
   const e = end ? yr(end) : "Actualidad";
   return s ? `${s} — ${e}` : e;
 };
+const pad2 = (n) => String(n).padStart(2, "0");
+const linkOrText = (text, url) =>
+  url
+    ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>`
+    : esc(text);
 
 const ICONS = {
   github:
@@ -30,6 +35,8 @@ const ICONS = {
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zM7.369 4.378c.525 0 .947.431.947.947 0 .525-.422.947-.947.947-.525 0-.946-.422-.946-.947 0-.516.421-.947.946-.947zm-.722 3.038h1.444v10.041H6.647V7.416zm3.562 0h3.9c3.712 0 5.344 2.653 5.344 5.025 0 2.578-2.016 5.025-5.325 5.025h-3.919V7.416zm1.444 1.303v7.444h2.297c3.272 0 4.022-2.484 4.022-3.722 0-2.016-1.284-3.722-4.097-3.722h-2.222z"/></svg>',
   email:
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+  globe:
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
   arrowUp:
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>',
   download:
@@ -55,53 +62,134 @@ function socials(basics, klass) {
   return out.join("\n");
 }
 
-function educationSection(education) {
-  return education
-    .map((e, i) => {
-      const degree = [e.studyType, e.area].filter(Boolean).join(" ");
-      return `
-    <div class="edu-item glass reveal" data-delay="${(i % 2) + 1}">
-      <p class="edu-date">${esc(range(e.startDate, e.endDate))}</p>
-      <h3 class="edu-degree">${esc(degree)}</h3>
-      <p class="edu-school">${esc(e.institution || "")}</p>
-    </div>`;
-    })
-    .join("");
-}
-
-function workTimeline(work) {
-  return work
-    .map((w, i) => {
-      const company = [w.name, w.location].filter(Boolean).join(" · ");
-      const highlights = (w.highlights || [])
+// Tarjetas tipo "timeline" (work y volunteer comparten formato)
+function timelineEntries(items, roleKey, orgKey) {
+  return items
+    .map((it, i) => {
+      const company = [it[orgKey], it.location].filter(Boolean).join(" · ");
+      const highlights = (it.highlights || [])
         .map((h) => `<li>${esc(h)}</li>`)
         .join("\n            ");
       return `
       <div class="tl-item reveal" data-delay="${(i % 3) + 1}">
         <div class="tl-card glass">
-          <p class="tl-date">${esc(range(w.startDate, w.endDate))}</p>
-          <h3 class="tl-role">${esc(w.position)}</h3>
+          <p class="tl-date">${esc(range(it.startDate, it.endDate))}</p>
+          <h3 class="tl-role">${esc(it[roleKey] || "")}</h3>
           <p class="tl-company">${esc(company)}</p>
-          <ul class="tl-list">
-            ${highlights}
-          </ul>
+          ${it.summary ? `<p class="tl-summary">${esc(it.summary)}</p>` : ""}
+          ${highlights ? `<ul class="tl-list">\n            ${highlights}\n          </ul>` : ""}
         </div>
       </div>`;
     })
     .join("");
 }
 
-function skillsGrid(skills) {
-  return skills
-    .map((s, i) => {
-      const tags = (s.keywords || [])
+// Tarjeta genérica: fecha (gradiente) + título (opcionalmente enlace) + subtítulo + texto
+function infoCard(i, { date, title, url, sub, text }) {
+  return `
+    <div class="card glass reveal" data-delay="${(i % 2) + 1}">
+      ${date ? `<p class="card-date">${esc(date)}</p>` : ""}
+      <h3 class="card-title">${linkOrText(title || "", url)}</h3>
+      ${sub ? `<p class="card-sub">${esc(sub)}</p>` : ""}
+      ${text ? `<p class="card-text">${esc(text)}</p>` : ""}
+    </div>`;
+}
+
+// Tarjeta tipo "categoría + etiquetas" (skills e interests comparten formato)
+function tagCards(items) {
+  return items
+    .map((it, i) => {
+      const tags = (it.keywords || [])
         .map((k) => `<span class="tag">${esc(k)}</span>`)
         .join("");
       return `
       <div class="skill-card glass reveal" data-delay="${(i % 2) + 1}">
-        <p class="skill-cat-title">${esc(s.name)}</p>
+        <p class="skill-cat-title">${esc(it.name)}</p>
         <div class="tags">${tags}</div>
       </div>`;
+    })
+    .join("");
+}
+
+function educationCards(items) {
+  return items
+    .map((e, i) =>
+      infoCard(i, {
+        date: range(e.startDate, e.endDate),
+        title: [e.studyType, e.area].filter(Boolean).join(" "),
+        url: e.url,
+        sub: e.institution,
+      })
+    )
+    .join("");
+}
+
+function awardsCards(items) {
+  return items
+    .map((a, i) =>
+      infoCard(i, { date: yr(a.date), title: a.title, sub: a.awarder, text: a.summary })
+    )
+    .join("");
+}
+
+function certificatesCards(items) {
+  return items
+    .map((c, i) =>
+      infoCard(i, { date: yr(c.date), title: c.name, url: c.url, sub: c.issuer })
+    )
+    .join("");
+}
+
+function publicationsCards(items) {
+  return items
+    .map((p, i) =>
+      infoCard(i, {
+        date: [p.publisher, yr(p.releaseDate)].filter(Boolean).join(" · "),
+        title: p.name,
+        url: p.url,
+        text: p.summary,
+      })
+    )
+    .join("");
+}
+
+function languagesGrid(items) {
+  return items
+    .map((l, i) => `
+      <div class="lang-card glass reveal" data-delay="${(i % 2) + 1}">
+        <span class="lang-icon">${ICONS.globe}</span>
+        <span class="lang-text">
+          <span class="lang-name">${esc(l.language)}</span>
+          <span class="lang-fluency">${esc(l.fluency || "")}</span>
+        </span>
+      </div>`)
+    .join("");
+}
+
+function referencesCards(items) {
+  return items
+    .map((r, i) => `
+    <div class="card glass reveal" data-delay="${(i % 2) + 1}">
+      <p class="ref-text">${esc(r.reference || "")}</p>
+      <p class="ref-name">— ${esc(r.name || "")}</p>
+    </div>`)
+    .join("");
+}
+
+function projectsCards(items) {
+  return items
+    .map((p, i) => {
+      const dateLine = p.startDate || p.endDate ? range(p.startDate, p.endDate) : p.type || "";
+      const highlights = (p.highlights || []).map((h) => `<li>${esc(h)}</li>`).join("");
+      const tags = (p.keywords || []).map((k) => `<span class="tag">${esc(k)}</span>`).join("");
+      return `
+    <div class="card glass reveal" data-delay="${(i % 2) + 1}">
+      ${dateLine ? `<p class="card-date">${esc(dateLine)}</p>` : ""}
+      <h3 class="card-title">${linkOrText(p.name || "", p.url)}</h3>
+      ${p.description ? `<p class="card-text">${esc(p.description)}</p>` : ""}
+      ${highlights ? `<ul class="tl-list">${highlights}</ul>` : ""}
+      ${tags ? `<div class="tags">${tags}</div>` : ""}
+    </div>`;
     })
     .join("");
 }
@@ -109,11 +197,53 @@ function skillsGrid(skills) {
 // --- render principal ------------------------------------------------------
 export function render(resume) {
   const b = resume.basics || {};
-  const work = resume.work || [];
-  const education = resume.education || [];
-  const skills = resume.skills || [];
   const avatar = b.image || PLACEHOLDER_AVATAR;
   const lang = (resume.meta && resume.meta.language) || "es";
+
+  // Registro de TODAS las secciones del schema de JSON Resume: qué etiqueta y
+  // qué render le toca a cada clave. El ORDEN en que se muestran lo decide el
+  // orden en que aparecen las claves en el resume.json (JSON.parse lo conserva).
+  const SECTION_REGISTRY = {
+    work:         { id: "experience",   nav: "Experiencia",   label: "Trayectoria",     title: "Experiencia profesional", body: (d) => `<div class="timeline">${timelineEntries(d, "position", "name")}</div>` },
+    volunteer:    { id: "volunteer",    nav: "Voluntariado",  label: "Voluntariado",    title: "Voluntariado",            body: (d) => `<div class="timeline">${timelineEntries(d, "position", "organization")}</div>` },
+    education:    { id: "education",     nav: "Formación",     label: "Formación",       title: "Educación",               body: (d) => educationCards(d) },
+    awards:       { id: "awards",        nav: "Premios",       label: "Reconocimientos", title: "Premios y becas",         body: (d) => awardsCards(d) },
+    certificates: { id: "certificates",  nav: "Certificados",  label: "Certificaciones", title: "Certificados",            body: (d) => certificatesCards(d) },
+    publications: { id: "publications",  nav: "Publicaciones", label: "Investigación",   title: "Publicaciones",           body: (d) => publicationsCards(d) },
+    skills:       { id: "skills",        nav: "Skills",        label: "Stack",           title: "Habilidades técnicas",    body: (d) => `<div class="skills-grid">${tagCards(d)}</div>` },
+    languages:    { id: "languages",     nav: "Idiomas",       label: "Idiomas",         title: "Idiomas",                 body: (d) => `<div class="lang-grid">${languagesGrid(d)}</div>` },
+    interests:    { id: "interests",     nav: "Intereses",     label: "Intereses",       title: "Intereses y aficiones",   body: (d) => `<div class="skills-grid">${tagCards(d)}</div>` },
+    references:   { id: "references",    nav: "Referencias",   label: "Referencias",     title: "Referencias",             body: (d) => referencesCards(d) },
+    projects:     { id: "projects",      nav: "Proyectos",     label: "Proyectos",       title: "Proyectos",               body: (d) => projectsCards(d) },
+  };
+
+  const sectionDefs = Object.keys(resume)
+    .map((key) => {
+      const def = SECTION_REGISTRY[key];
+      const data = resume[key];
+      if (!def || !Array.isArray(data) || data.length === 0) return null;
+      return { ...def, body: def.body(data) };
+    })
+    .filter(Boolean);
+
+  const navHtml = [`<a href="#hero" class="menu-item">Inicio</a>`]
+    .concat(sectionDefs.map((s) => `<a href="#${s.id}" class="menu-item">${esc(s.nav)}</a>`))
+    .join("\n      ");
+
+  const sectionsHtml = sectionDefs
+    .map((s, idx) => `
+<section id="${s.id}">
+  <div class="wrap">
+    <div class="reveal">
+      <p class="section-label">${pad2(idx + 1)} — ${esc(s.label)}</p>
+      <h2 class="section-title">${esc(s.title)}</h2>
+    </div>
+    ${s.body}
+  </div>
+</section>`)
+    .join("\n");
+
+  const spyIds = JSON.stringify(["hero", ...sectionDefs.map((s) => s.id)]);
 
   return `<!DOCTYPE html>
 <html lang="${esc(lang)}">
@@ -161,15 +291,16 @@ export function render(resume) {
   .progress { position: fixed; top: 0; left: 0; height: 2px; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); box-shadow: 0 0 12px var(--glow); z-index: 200; transition: width .1s linear; }
 
   /* NAV: píldora centrada solo con los enlaces */
-  nav { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 100; border-radius: 999px;
+  nav { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 100; max-width: calc(100vw - 36px); border-radius: 999px;
     background: var(--nav-bg); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px);
     border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); transition: background .5s ease, border-color .5s ease; }
-  .nav-inner { display: flex; align-items: center; padding: 7px 9px; }
-  .nav-links { display: flex; gap: 4px; align-items: center; }
-  .nav-links a.menu-item { text-decoration: none; color: var(--text-soft); font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 999px; transition: color .25s, background .25s, box-shadow .25s; }
+  .nav-inner { display: flex; align-items: center; padding: 7px 8px; overflow-x: auto; scrollbar-width: none; }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav-links { display: flex; gap: 2px; align-items: center; }
+  .nav-links a.menu-item { text-decoration: none; color: var(--text-soft); font-size: 13.5px; font-weight: 500; padding: 8px 13px; border-radius: 999px; white-space: nowrap; transition: color .25s, background .25s, box-shadow .25s; }
   .nav-links a.menu-item:hover { color: var(--text); background: var(--accent-soft); }
   .nav-links a.menu-item.active { color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent-soft), 0 0 16px var(--glow); }
-  @media (max-width: 640px) { nav { display: none; } }
+  @media (max-width: 900px) { nav { display: none; } }
 
   /* TOGGLE de tema: botón independiente en la esquina superior derecha */
   .theme-toggle { position: fixed; top: 18px; right: 18px; z-index: 101; width: 42px; height: 42px; border-radius: 50%;
@@ -197,7 +328,7 @@ export function render(resume) {
   [data-theme="dark"] .hero-name { filter: drop-shadow(0 0 26px var(--glow)); }
   @media (max-width: 640px) { .hero-name { white-space: normal; } }
   .hero-role { font-size: clamp(18px, 3.6vw, 22px); color: var(--text-soft); font-weight: 500; margin-bottom: 22px; letter-spacing: -.01em; }
-  .hero-intro { font-size: 16.5px; color: var(--text-soft); max-width: 560px; margin-bottom: 30px; }
+  .hero-intro { font-size: 16.5px; color: var(--text-soft); max-width: 600px; margin-bottom: 30px; }
   .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
   .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 11px; font-size: 14.5px; font-weight: 600; text-decoration: none; cursor: pointer; transition: all .28s cubic-bezier(.16,1,.3,1); border: 1px solid transparent; }
   .btn-primary { background: linear-gradient(120deg, var(--accent), var(--accent-2)); color: #fff; box-shadow: 0 4px 20px var(--glow); }
@@ -208,15 +339,22 @@ export function render(resume) {
   .social-icon:hover { color: var(--accent); transform: translateY(-3px); box-shadow: 0 0 22px var(--glow); border-color: var(--accent); }
   .social-icon svg { width: 19px; height: 19px; }
 
-  /* EDUCATION */
-  .edu-item { padding: 22px 24px; margin-bottom: 16px; transition: transform .3s ease, box-shadow .3s ease; }
-  .edu-item:hover { transform: translateY(-4px); box-shadow: 0 12px 36px var(--glow); }
-  .edu-item:last-child { margin-bottom: 0; }
-  .edu-date { font-size: 13px; font-weight: 600; margin-bottom: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .edu-degree { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
-  .edu-school { font-size: 15px; color: var(--text-soft); margin-top: 2px; }
+  /* CARDS genéricas: educación, premios, certificados, publicaciones, proyectos, referencias */
+  .card { padding: 22px 24px; margin-bottom: 16px; transition: transform .3s ease, box-shadow .3s ease; }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px var(--glow); }
+  .card:last-child { margin-bottom: 0; }
+  .card-date { font-size: 13px; font-weight: 600; margin-bottom: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .card-title { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+  .card-title a { color: inherit; text-decoration: none; transition: color .25s; }
+  .card-title a:hover { color: var(--accent); }
+  .card-sub { font-size: 15px; color: var(--text-soft); margin-top: 2px; }
+  .card-text { font-size: 14.5px; color: var(--text-soft); margin-top: 10px; line-height: 1.55; }
+  .card .tl-list { margin-top: 10px; }
+  .card .tags { margin-top: 12px; }
+  .ref-text { font-size: 15px; color: var(--text-soft); font-style: italic; line-height: 1.6; }
+  .ref-name { font-weight: 600; color: var(--text); margin-top: 10px; }
 
-  /* EXPERIENCE (timeline) */
+  /* TIMELINE: work y volunteer */
   .timeline { position: relative; }
   .tl-item { position: relative; padding: 0 0 22px 30px; border-left: 2px solid var(--glass-border); }
   .tl-item:last-child { padding-bottom: 0; }
@@ -226,10 +364,12 @@ export function render(resume) {
   .tl-date { font-size: 13px; font-weight: 600; letter-spacing: .02em; margin-bottom: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .tl-role { font-size: 18px; font-weight: 700; letter-spacing: -.01em; }
   .tl-company { font-size: 15px; color: var(--text-soft); margin-bottom: 12px; font-weight: 500; }
+  .tl-summary { font-size: 15px; color: var(--text-soft); margin-bottom: 10px; }
   .tl-list { list-style: none; }
   .tl-list li { position: relative; padding-left: 18px; color: var(--text-soft); font-size: 15px; margin-bottom: 7px; }
   .tl-list li::before { content: '▹'; position: absolute; left: 0; color: var(--accent); }
 
+  /* GRID de categorías + etiquetas: skills e interests */
   .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   @media (max-width: 600px) { .skills-grid { grid-template-columns: 1fr; } }
   .skill-card { padding: 24px; transition: transform .3s ease, box-shadow .3s ease; }
@@ -238,6 +378,16 @@ export function render(resume) {
   .tags { display: flex; flex-wrap: wrap; gap: 8px; }
   .tag { font-size: 13px; font-weight: 500; padding: 6px 13px; background: var(--accent-soft); color: var(--accent); border: 1px solid transparent; border-radius: 8px; transition: all .25s; }
   .tag:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 0 14px var(--glow); }
+
+  /* LANGUAGES */
+  .lang-grid { display: flex; flex-wrap: wrap; gap: 16px; }
+  .lang-card { padding: 16px 22px; display: flex; align-items: center; gap: 13px; transition: transform .3s ease, box-shadow .3s ease; }
+  .lang-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px var(--glow); }
+  .lang-icon { color: var(--accent); display: flex; }
+  .lang-icon svg { width: 20px; height: 20px; filter: drop-shadow(0 0 6px var(--glow)); }
+  .lang-text { display: flex; flex-direction: column; line-height: 1.3; }
+  .lang-name { font-weight: 700; font-size: 15.5px; }
+  .lang-fluency { font-size: 13px; color: var(--text-soft); }
 
   footer { padding: 48px 0; border-top: 1px solid var(--glass-border); color: var(--text-faint); font-size: 14px; position: relative; z-index: 2; }
   .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
@@ -274,7 +424,7 @@ export function render(resume) {
     #hero { min-height: auto !important; padding-top: 8px !important; padding-bottom: 8px !important; }
     .hero-name { white-space: normal !important; }
     .glass { background: #f5f2ec !important; box-shadow: none !important; border: 1px solid #d9d3c5 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-    .hero-name, .hero-eyebrow, .section-label, .tl-date, .edu-date, .hero-edu-label {
+    .hero-name, .hero-eyebrow, .section-label, .tl-date, .card-date {
       background: none !important; -webkit-background-clip: border-box !important; background-clip: border-box !important;
       -webkit-text-fill-color: #2f6043 !important; color: #2f6043 !important; filter: none !important; }
     .hero-name { -webkit-text-fill-color: #16231c !important; color: #16231c !important; }
@@ -296,10 +446,7 @@ export function render(resume) {
 <nav>
   <div class="nav-inner">
     <div class="nav-links">
-      <a href="#hero" class="menu-item">Inicio</a>
-      <a href="#education" class="menu-item">Formación</a>
-      <a href="#experience" class="menu-item">Experiencia</a>
-      <a href="#skills" class="menu-item">Skills</a>
+      ${navHtml}
     </div>
   </div>
 </nav>
@@ -330,40 +477,7 @@ ${socials(b, "social-icon")}
     </div>
   </div>
 </section>
-
-<section id="education">
-  <div class="wrap">
-    <div class="reveal">
-      <p class="section-label">01 — Formación</p>
-      <h2 class="section-title">Educación</h2>
-    </div>
-${educationSection(education)}
-  </div>
-</section>
-
-<section id="experience">
-  <div class="wrap">
-    <div class="reveal">
-      <p class="section-label">02 — Trayectoria</p>
-      <h2 class="section-title">Experiencia profesional</h2>
-    </div>
-    <div class="timeline">
-${workTimeline(work)}
-    </div>
-  </div>
-</section>
-
-<section id="skills">
-  <div class="wrap">
-    <div class="reveal">
-      <p class="section-label">03 — Stack</p>
-      <h2 class="section-title">Habilidades técnicas</h2>
-    </div>
-    <div class="skills-grid">
-${skillsGrid(skills)}
-    </div>
-  </div>
-</section>
+${sectionsHtml}
 
 <footer>
   <div class="wrap footer-bottom">
@@ -395,7 +509,7 @@ ${socials(b, "")}
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
   const navLinks = [...document.querySelectorAll('.nav-links a.menu-item')];
-  const spyIds = ['hero', 'education', 'experience', 'skills'];
+  const spyIds = ${spyIds};
   const spySections = spyIds.map(id => document.getElementById(id)).filter(Boolean);
   const spy = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -421,7 +535,6 @@ ${socials(b, "")}
   function onMouse(e) { mouseX = (e.clientX / window.innerWidth - 0.5); mouseY = (e.clientY / window.innerHeight - 0.5); if (!ticking) { requestAnimationFrame(update); ticking = true; } }
   function update() {
     blobs.forEach(bl => { const depth = parseFloat(bl.dataset.depth) || 0.3; const ty = scrollY * depth; const mx = mouseX * depth * 60; const my = mouseY * depth * 60; bl.style.transform = 'translate(' + mx + 'px,' + (ty + my) + 'px)'; });
-    // Parallax/desvanecido del hero SOLO en pantallas anchas (en estrechas la portada es alta y molesta)
     if (heroContent) {
       if (window.innerWidth > 820) {
         heroContent.style.transform = 'translateY(' + (scrollY * 0.18) + 'px)';
@@ -434,7 +547,6 @@ ${socials(b, "")}
     const docH = document.documentElement.scrollHeight - window.innerHeight;
     progress.style.width = (docH > 0 ? (scrollY / docH) * 100 : 0) + '%';
     toTop.classList.toggle('show', scrollY > 480);
-    // El botón "subir" no invade el footer: se eleva justo cuando el footer entra en pantalla
     if (footerEl) {
       const intrude = window.innerHeight - footerEl.getBoundingClientRect().top;
       toTop.style.bottom = (intrude > 0 ? 28 + intrude : 28) + 'px';

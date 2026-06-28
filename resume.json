@@ -7,7 +7,7 @@
     "email": "felipegv2204@gmail.com",
     "url": "https://felipegarciavidal.github.io/CV/",
     "summary": "Como estudiante de doctorado en Tecnologías de la Información y Comunicaciones en la Universidad Politécnica de Cartagena, investigo la optimización y el control de tecnologías de acceso en redes vehiculares. Me motiva trabajar en entornos dinámicos y desafiantes orientados al aprendizaje continuo y la innovación, siempre abierto a nuevas colaboraciones con profesionales del sector tecnológico. A largo plazo, mi objetivo es fusionar la investigación con la innovación aplicada para contribuir al desarrollo de soluciones tecnológicas sostenibles y de alto impacto.",
-    "location": { "city": "Cartagena", "countryCode": "ES" },
+    "location": { "city": "Cartagena", "countryCode": "ES", "region": "Región de Murcia" },
     "profiles": [
       { "network": "LinkedIn", "username": "Felipe García Vidal", "url": "https://www.linkedin.com/in/felipe-garc%C3%ADa-vidal-312a5a233/" },
       { "network": "GitHub", "username": "Felipin2204", "url": "https://github.com/Felipin2204" },
@@ -74,6 +74,36 @@
       "endDate": ""
     }
   ],
+  "awards": [
+    {
+      "title": "Premio a la Excelencia Académica",
+      "date": "2022-06",
+      "awarder": "Universidad Politécnica de Cartagena",
+      "summary": "Reconocimiento al rendimiento académico excepcional durante el Grado en Ingeniería Telemática."
+    },
+    {
+      "title": "Beca de Investigación",
+      "date": "2023-09",
+      "awarder": "Universidad Politécnica de Cartagena",
+      "summary": "Beca otorgada para apoyar la investigación en optimización y control de tecnologías de acceso en redes vehiculares."
+    }
+  ],
+  "publications": [
+    {
+      "name": "Optimización de Protocolos de Comunicación en Redes Vehiculares",
+      "publisher": "Revista Internacional de Telecomunicaciones",
+      "releaseDate": "2023-11",
+      "url": "https://example.com/publication1",
+      "summary": "Estudio sobre la optimización de protocolos de comunicación en entornos vehiculares, con enfoque en eficiencia y seguridad."
+    },
+    {
+      "name": "Control Adaptativo de Tecnologías de Acceso en Redes Vehiculares",
+      "publisher": "Conferencia Internacional de Redes y Comunicaciones",
+      "releaseDate": "2024-03",
+      "url": "https://example.com/publication2",
+      "summary": "Investigación sobre técnicas de control adaptativo para mejorar la calidad del servicio en redes vehiculares."
+    }
+  ],
   "skills": [
     { "name": "Lenguajes", "keywords": ["Python", "C++", "Java", "JavaScript", "PHP", "MATLAB"] },
     {"name": "Desarrollo Web", "keywords": ["Vue.js", "React", "Node.js"] },
@@ -81,6 +111,10 @@
     { "name": "Orquestación e Infraestructura", "keywords": ["Kubernetes", "Docker Swarm", "Apache Airflow"] },
     { "name": "Data Science & ML", "keywords": ["NumPy", "Pandas", "Matplotlib", "Scikit-learn", "SciPy", "TensorFlow"] },
     { "name": "Herramientas", "keywords": ["Git", "Linux"] }
+  ],
+  "languages": [
+    { "language": "Español", "fluency": "Nativo" },
+    { "language": "Inglés", "fluency": "Avanzado" }
   ],
   "meta": { "theme": "felipe", "language": "es" }
 }

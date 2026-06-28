@@ -2,7 +2,7 @@
 
 CV de una sola página generado desde un único `resume.json`: produce **web** (tema propio, glassmorphism, claro/oscuro) y **PDF** a la vez. Basado en [JSON Resume](https://jsonresume.org/).
 
-**Demo:** https://felipegarciavidal.github.io/CV/
+**Demo:** https://felipegarciavidal.github.io/CVO/
 
 ## Cómo funciona
 

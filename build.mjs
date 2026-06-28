@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { render, pdfFilename } from "./theme.js";   // <-- importa también pdfFilename
 import puppeteer from "puppeteer";
 
-const PDF_THEME = "jsonresume-theme-even";
+const PDF_THEME = "jsonresume-theme-even-es";
 
 const resume = JSON.parse(readFileSync("./resume.json", "utf-8"));
 mkdirSync("./dist", { recursive: true });

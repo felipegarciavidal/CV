@@ -1,12 +1,44 @@
-// theme.js — Theme de JSON Resume para Felipe
-// Exporta render(resume) -> string HTML, siguiendo el contrato de JSON Resume.
-// Compatible con `resumed` y con el build.mjs incluido (que también genera el PDF).
+// theme.js — Theme de JSON Resume (totalmente data-driven)
+// Exporta render(resume) -> string HTML y pdfFilename(resume) -> nombre del PDF.
+// Nada personal está hardcodeado: todo sale del resume.json. Los textos de
+// interfaz tienen valores por defecto en español, sobreescribibles vía meta.labels.
 
 const PLACEHOLDER_AVATAR =
   "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23b9b3a4'/%3E%3Ccircle cx='100' cy='80' r='36' fill='%23ffffff' opacity='0.9'/%3E%3Cpath d='M48 178c0-32 24-54 52-54s52 22 52 54z' fill='%23ffffff' opacity='0.9'/%3E%3C/svg%3E";
 
-// Nombre del PDF (debe coincidir con el path de build.mjs)
-const PDF_FILENAME = "Felipe_García_Vidal.pdf";
+// Textos de interfaz por defecto. Cualquiera puede sobreescribirlos en su
+// resume.json mediante "meta": { "labels": { ... } } sin tocar este archivo.
+const DEFAULT_LABELS = {
+  eyebrow: "Hola, soy",
+  download: "Descargar CV",
+  themeToggle: "Cambiar tema",
+  backToTop: "Volver al inicio",
+  photoAlt: "Foto de",
+  navHome: "Inicio",
+  present: "Actualidad",
+  sections: {
+    work:         { nav: "Experiencia",   label: "Trayectoria",     title: "Experiencia profesional" },
+    volunteer:    { nav: "Voluntariado",  label: "Voluntariado",    title: "Voluntariado" },
+    education:    { nav: "Formación",     label: "Formación",       title: "Educación" },
+    awards:       { nav: "Premios",       label: "Reconocimientos", title: "Premios y becas" },
+    certificates: { nav: "Certificados",  label: "Certificaciones", title: "Certificados" },
+    publications: { nav: "Publicaciones", label: "Investigación",   title: "Publicaciones" },
+    skills:       { nav: "Skills",        label: "Stack",           title: "Habilidades técnicas" },
+    languages:    { nav: "Idiomas",       label: "Idiomas",         title: "Idiomas" },
+    interests:    { nav: "Intereses",     label: "Intereses",       title: "Intereses y aficiones" },
+    references:   { nav: "Referencias",   label: "Referencias",     title: "Referencias" },
+    projects:     { nav: "Proyectos",     label: "Proyectos",       title: "Proyectos" },
+  },
+};
+
+function mergeLabels(def, over) {
+  const out = { ...def, ...over };
+  out.sections = { ...def.sections };
+  for (const k of Object.keys((over && over.sections) || {})) {
+    out.sections[k] = { ...(def.sections[k] || {}), ...over.sections[k] };
+  }
+  return out;
+}
 
 // --- helpers ---------------------------------------------------------------
 const esc = (s) =>
@@ -15,9 +47,9 @@ const esc = (s) =>
   );
 
 const yr = (d) => (d ? String(d).slice(0, 4) : "");
-const range = (start, end) => {
+const range = (start, end, present) => {
   const s = yr(start);
-  const e = end ? yr(end) : "Actualidad";
+  const e = end ? yr(end) : present;
   return s ? `${s} — ${e}` : e;
 };
 const pad2 = (n) => String(n).padStart(2, "0");
@@ -25,6 +57,13 @@ const linkOrText = (text, url) =>
   url
     ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>`
     : esc(text);
+
+// Nombre del PDF derivado del nombre del resume.json (sin hardcodear nada).
+export function pdfFilename(resume) {
+  const name = ((resume.basics && resume.basics.name) || "cv").trim();
+  const slug = name.replace(/[\\/:*?"<>|]/g, "").replace(/\s+/g, "_");
+  return (slug || "cv") + ".pdf";
+}
 
 const ICONS = {
   github:
@@ -63,7 +102,7 @@ function socials(basics, klass) {
 }
 
 // Tarjetas tipo "timeline" (work y volunteer comparten formato)
-function timelineEntries(items, roleKey, orgKey) {
+function timelineEntries(items, roleKey, orgKey, present) {
   return items
     .map((it, i) => {
       const company = [it[orgKey], it.location].filter(Boolean).join(" · ");
@@ -73,7 +112,7 @@ function timelineEntries(items, roleKey, orgKey) {
       return `
       <div class="tl-item reveal" data-delay="${(i % 3) + 1}">
         <div class="tl-card glass">
-          <p class="tl-date">${esc(range(it.startDate, it.endDate))}</p>
+          <p class="tl-date">${esc(range(it.startDate, it.endDate, present))}</p>
           <h3 class="tl-role">${esc(it[roleKey] || "")}</h3>
           <p class="tl-company">${esc(company)}</p>
           ${it.summary ? `<p class="tl-summary">${esc(it.summary)}</p>` : ""}
@@ -111,11 +150,11 @@ function tagCards(items) {
     .join("");
 }
 
-function educationCards(items) {
+function educationCards(items, present) {
   return items
     .map((e, i) =>
       infoCard(i, {
-        date: range(e.startDate, e.endDate),
+        date: range(e.startDate, e.endDate, present),
         title: [e.studyType, e.area].filter(Boolean).join(" "),
         url: e.url,
         sub: e.institution,
@@ -176,10 +215,10 @@ function referencesCards(items) {
     .join("");
 }
 
-function projectsCards(items) {
+function projectsCards(items, present) {
   return items
     .map((p, i) => {
-      const dateLine = p.startDate || p.endDate ? range(p.startDate, p.endDate) : p.type || "";
+      const dateLine = p.startDate || p.endDate ? range(p.startDate, p.endDate, present) : p.type || "";
       const highlights = (p.highlights || []).map((h) => `<li>${esc(h)}</li>`).join("");
       const tags = (p.keywords || []).map((k) => `<span class="tag">${esc(k)}</span>`).join("");
       return `
@@ -197,36 +236,41 @@ function projectsCards(items) {
 // --- render principal ------------------------------------------------------
 export function render(resume) {
   const b = resume.basics || {};
+  const meta = resume.meta || {};
   const avatar = b.image || PLACEHOLDER_AVATAR;
-  const lang = (resume.meta && resume.meta.language) || "es";
+  const lang = meta.language || "es";
+  const L = mergeLabels(DEFAULT_LABELS, meta.labels || {});
+  const pdfName = pdfFilename(resume);
 
-  // Registro de TODAS las secciones del schema de JSON Resume: qué etiqueta y
-  // qué render le toca a cada clave. El ORDEN en que se muestran lo decide el
-  // orden en que aparecen las claves en el resume.json (JSON.parse lo conserva).
-  const SECTION_REGISTRY = {
-    work:         { id: "experience",   nav: "Experiencia",   label: "Trayectoria",     title: "Experiencia profesional", body: (d) => `<div class="timeline">${timelineEntries(d, "position", "name")}</div>` },
-    volunteer:    { id: "volunteer",    nav: "Voluntariado",  label: "Voluntariado",    title: "Voluntariado",            body: (d) => `<div class="timeline">${timelineEntries(d, "position", "organization")}</div>` },
-    education:    { id: "education",     nav: "Formación",     label: "Formación",       title: "Educación",               body: (d) => educationCards(d) },
-    awards:       { id: "awards",        nav: "Premios",       label: "Reconocimientos", title: "Premios y becas",         body: (d) => awardsCards(d) },
-    certificates: { id: "certificates",  nav: "Certificados",  label: "Certificaciones", title: "Certificados",            body: (d) => certificatesCards(d) },
-    publications: { id: "publications",  nav: "Publicaciones", label: "Investigación",   title: "Publicaciones",           body: (d) => publicationsCards(d) },
-    skills:       { id: "skills",        nav: "Skills",        label: "Stack",           title: "Habilidades técnicas",    body: (d) => `<div class="skills-grid">${tagCards(d)}</div>` },
-    languages:    { id: "languages",     nav: "Idiomas",       label: "Idiomas",         title: "Idiomas",                 body: (d) => `<div class="lang-grid">${languagesGrid(d)}</div>` },
-    interests:    { id: "interests",     nav: "Intereses",     label: "Intereses",       title: "Intereses y aficiones",   body: (d) => `<div class="skills-grid">${tagCards(d)}</div>` },
-    references:   { id: "references",    nav: "Referencias",   label: "Referencias",     title: "Referencias",             body: (d) => referencesCards(d) },
-    projects:     { id: "projects",      nav: "Proyectos",     label: "Proyectos",       title: "Proyectos",               body: (d) => projectsCards(d) },
+  // Registro de TODAS las secciones del schema: a cada clave del resume.json le
+  // corresponde un id de ancla y una función de render. Las etiquetas visibles
+  // salen de L.sections[clave]. El ORDEN lo decide el orden de las claves en el
+  // resume.json (JSON.parse lo conserva).
+  const REGISTRY = {
+    work:         { id: "experience",   body: (d) => `<div class="timeline">${timelineEntries(d, "position", "name", L.present)}</div>` },
+    volunteer:    { id: "volunteer",    body: (d) => `<div class="timeline">${timelineEntries(d, "position", "organization", L.present)}</div>` },
+    education:    { id: "education",     body: (d) => educationCards(d, L.present) },
+    awards:       { id: "awards",        body: (d) => awardsCards(d) },
+    certificates: { id: "certificates",  body: (d) => certificatesCards(d) },
+    publications: { id: "publications",  body: (d) => publicationsCards(d) },
+    skills:       { id: "skills",        body: (d) => `<div class="skills-grid">${tagCards(d)}</div>` },
+    languages:    { id: "languages",     body: (d) => `<div class="lang-grid">${languagesGrid(d)}</div>` },
+    interests:    { id: "interests",     body: (d) => `<div class="skills-grid">${tagCards(d)}</div>` },
+    references:   { id: "references",    body: (d) => referencesCards(d) },
+    projects:     { id: "projects",      body: (d) => projectsCards(d, L.present) },
   };
 
   const sectionDefs = Object.keys(resume)
     .map((key) => {
-      const def = SECTION_REGISTRY[key];
+      const def = REGISTRY[key];
+      const labels = L.sections[key];
       const data = resume[key];
-      if (!def || !Array.isArray(data) || data.length === 0) return null;
-      return { ...def, body: def.body(data) };
+      if (!def || !labels || !Array.isArray(data) || data.length === 0) return null;
+      return { id: def.id, nav: labels.nav, label: labels.label, title: labels.title, body: def.body(data) };
     })
     .filter(Boolean);
 
-  const navHtml = [`<a href="#hero" class="menu-item">Inicio</a>`]
+  const navHtml = [`<a href="#hero" class="menu-item">${esc(L.navHome)}</a>`]
     .concat(sectionDefs.map((s) => `<a href="#${s.id}" class="menu-item">${esc(s.nav)}</a>`))
     .join("\n      ");
 
@@ -290,7 +334,6 @@ export function render(resume) {
 
   .progress { position: fixed; top: 0; left: 0; height: 2px; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); box-shadow: 0 0 12px var(--glow); z-index: 200; transition: width .1s linear; }
 
-  /* NAV: píldora centrada solo con los enlaces */
   nav { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 100; max-width: calc(100vw - 36px); border-radius: 999px;
     background: var(--nav-bg); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px);
     border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); transition: background .5s ease, border-color .5s ease; }
@@ -302,7 +345,6 @@ export function render(resume) {
   .nav-links a.menu-item.active { color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent-soft), 0 0 16px var(--glow); }
   @media (max-width: 900px) { nav { display: none; } }
 
-  /* TOGGLE de tema: botón independiente en la esquina superior derecha */
   .theme-toggle { position: fixed; top: 18px; right: 18px; z-index: 101; width: 42px; height: 42px; border-radius: 50%;
     background: var(--nav-bg); border: 1px solid var(--glass-border);
     backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); box-shadow: var(--glass-shadow);
@@ -339,7 +381,6 @@ export function render(resume) {
   .social-icon:hover { color: var(--accent); transform: translateY(-3px); box-shadow: 0 0 22px var(--glow); border-color: var(--accent); }
   .social-icon svg { width: 19px; height: 19px; }
 
-  /* CARDS genéricas: educación, premios, certificados, publicaciones, proyectos, referencias */
   .card { padding: 22px 24px; margin-bottom: 16px; transition: transform .3s ease, box-shadow .3s ease; }
   .card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px var(--glow); }
   .card:last-child { margin-bottom: 0; }
@@ -354,7 +395,6 @@ export function render(resume) {
   .ref-text { font-size: 15px; color: var(--text-soft); font-style: italic; line-height: 1.6; }
   .ref-name { font-weight: 600; color: var(--text); margin-top: 10px; }
 
-  /* TIMELINE: work y volunteer */
   .timeline { position: relative; }
   .tl-item { position: relative; padding: 0 0 22px 30px; border-left: 2px solid var(--glass-border); }
   .tl-item:last-child { padding-bottom: 0; }
@@ -369,7 +409,6 @@ export function render(resume) {
   .tl-list li { position: relative; padding-left: 18px; color: var(--text-soft); font-size: 15px; margin-bottom: 7px; }
   .tl-list li::before { content: '▹'; position: absolute; left: 0; color: var(--accent); }
 
-  /* GRID de categorías + etiquetas: skills e interests */
   .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   @media (max-width: 600px) { .skills-grid { grid-template-columns: 1fr; } }
   .skill-card { padding: 24px; transition: transform .3s ease, box-shadow .3s ease; }
@@ -379,7 +418,6 @@ export function render(resume) {
   .tag { font-size: 13px; font-weight: 500; padding: 6px 13px; background: var(--accent-soft); color: var(--accent); border: 1px solid transparent; border-radius: 8px; transition: all .25s; }
   .tag:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 0 14px var(--glow); }
 
-  /* LANGUAGES */
   .lang-grid { display: flex; flex-wrap: wrap; gap: 16px; }
   .lang-card { padding: 16px 22px; display: flex; align-items: center; gap: 13px; transition: transform .3s ease, box-shadow .3s ease; }
   .lang-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px var(--glow); }
@@ -413,7 +451,6 @@ export function render(resume) {
     .blob, .avatar { animation: none; }
   }
 
-  /* ---------- PDF / PRINT (por si se imprime la web con Ctrl+P) ---------- */
   @media print {
     @page { margin: 0; }
     body { background: #fff !important; color: #16231c !important; }
@@ -451,7 +488,7 @@ export function render(resume) {
   </div>
 </nav>
 
-<button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+<button class="theme-toggle" id="themeToggle" aria-label="${esc(L.themeToggle)}">
   <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
   <svg id="iconSun" style="display:none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
 </button>
@@ -460,15 +497,15 @@ export function render(resume) {
   <div class="wrap">
     <div class="hero-grid" id="heroContent">
       <div class="avatar-wrap reveal">
-        <div class="avatar"><img src="${esc(avatar)}" alt="Foto de ${esc(b.name || "")}"></div>
+        <div class="avatar"><img src="${esc(avatar)}" alt="${esc(L.photoAlt)} ${esc(b.name || "")}"></div>
       </div>
       <div class="hero-text reveal" data-delay="1">
-        <p class="hero-eyebrow">Hola, soy</p>
+        <p class="hero-eyebrow">${esc(L.eyebrow)}</p>
         <h1 class="hero-name">${esc(b.name || "")}</h1>
         <p class="hero-role">${esc(b.label || "")}</p>
         <p class="hero-intro">${esc(b.summary || "")}</p>
         <div class="hero-actions">
-          <a href="${esc(PDF_FILENAME)}" class="btn btn-primary" download="${esc(PDF_FILENAME)}">${ICONS.download} Descargar CV</a>
+          <a href="${esc(pdfName)}" class="btn btn-primary" download="${esc(pdfName)}">${ICONS.download} ${esc(L.download)}</a>
           <div class="socials">
 ${socials(b, "social-icon")}
           </div>
@@ -488,7 +525,7 @@ ${socials(b, "")}
   </div>
 </footer>
 
-<button class="to-top" id="toTop" aria-label="Volver al inicio">${ICONS.arrowUp}</button>
+<button class="to-top" id="toTop" aria-label="${esc(L.backToTop)}">${ICONS.arrowUp}</button>
 
 <script>
   const themeToggle = document.getElementById('themeToggle');
@@ -527,7 +564,6 @@ ${socials(b, "")}
   const toTop = document.getElementById('toTop');
   const footerEl = document.querySelector('footer');
 
-  // Botón "volver arriba": handler en JS (evita el choque con element.scrollTop)
   toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
   let scrollY = 0, mouseX = 0, mouseY = 0, ticking = false;

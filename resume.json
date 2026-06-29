@@ -5,59 +5,57 @@
     "label": "Ingeniero de telecomunicaciones especializado en telemática",
     "image": "https://avatars.githubusercontent.com/u/274860976?v=4",
     "email": "felipegv2204@gmail.com",
-    "url": "https://felipegarciavidal.github.io/CV/",
-    "summary": "Como estudiante de doctorado en Tecnologías de la Información y Comunicaciones en la Universidad Politécnica de Cartagena, investigo la optimización y el control de tecnologías de acceso en redes vehiculares. Me motiva trabajar en entornos dinámicos y desafiantes orientados al aprendizaje continuo y la innovación, siempre abierto a nuevas colaboraciones con profesionales del sector tecnológico. A largo plazo, mi objetivo es fusionar la investigación con la innovación aplicada para contribuir al desarrollo de soluciones tecnológicas sostenibles y de alto impacto.",
-    "location": { "city": "Cartagena", "countryCode": "ES", "region": "Región de Murcia" },
+    "url": "https://felipegarciavidal.github.io/CVO/",
+    "summary": "Soy estudiante de doctorado en Tecnologías de la Información y las Comunicaciones en la Universidad Politécnica de Cartagena, donde investigo la optimización y el control de tecnologías de acceso en redes vehiculares. Me motivan los entornos dinámicos y exigentes, orientados al aprendizaje continuo, y estoy siempre abierto a colaborar con otros profesionales del sector. A largo plazo, mi objetivo es unir investigación e innovación aplicada para desarrollar soluciones tecnológicas sostenibles y de alto impacto.",
+    "location": { "city": "Cartagena", "countryCode": "ES" },
     "profiles": [
       { "network": "LinkedIn", "username": "Felipe García Vidal", "url": "https://www.linkedin.com/in/felipe-garc%C3%ADa-vidal-312a5a233/" },
-      { "network": "GitHub", "username": "Felipin2204", "url": "https://github.com/Felipin2204" },
-      { "network": "ORCID", "username": "Felipe Garcia-Vidal", "url": "https://orcid.org/0009-0006-4153-1440" }
+      { "network": "ORCID", "username": "Felipe Garcia-Vidal", "url": "https://orcid.org/0009-0006-4153-1440" },
+      { "network": "GitHub", "username": "Felipin2204", "url": "https://github.com/Felipin2204" }
     ]
   },
   "work": [
     {
-      "name": "Empresa",
-      "position": "Data Engineer",
-      "location": "Ciudad",
-      "startDate": "2023-01",
+      "name": "Universidad Politécnica de Cartagena",
+      "position": "Contratado predoctoral de investigación (FPI) en grupo GIRTEL",
+      "location": "Cartagena",
+      "startDate": "2024-08",
       "highlights": [
-        "Diseño y despliegue de pipelines de datos en producción con Apache Airflow sobre un clúster Kubernetes (k3s).",
-        "Construcción de imágenes Docker personalizadas e instalación de drivers ODBC de InterSystems Caché para extracción de datos.",
-        "Orquestación de flujos paralelizados con dynamic task mapping y gestión de secretos vía Kubernetes secrets.",
-        "Implementación de pipelines Caché → InfluxDB con procesamiento concurrente para cargas de series temporales."
+        "Diseño e implementación de una arquitectura cliente-servidor en Python para la automatización de simulaciones en un gemelo digital de redes 5G (Simu5G).",
+        "Gestión del despliegue y mantenimiento de la infraestructura de servicios del grupo de investigación GIRTEL.",
+        "Análisis y evaluación mediante simulación de algoritmos de selección multiRAT en redes vehiculares."
       ]
     },
     {
-      "name": "Empresa",
-      "position": "Rol anterior",
-      "location": "Ciudad",
-      "startDate": "2021-01",
-      "endDate": "2023-01",
+      "name": "Universidad Politécnica de Cartagena",
+      "position": "Becario en actividades de I+D+i en grupo GIRTEL en colaboración con Banco Santander",
+      "location": "Cartagena",
+      "startDate": "2022-11",
+      "endDate": "2024-07",
       "highlights": [
-        "Logro o responsabilidad principal en este puesto.",
-        "Otro logro relevante con impacto medible si es posible.",
-        "Tecnologías y herramientas con las que trabajaste."
+        "Desarrollo de un framework en OMNeT++ (C++) para la simulación de comunicaciones multicanal en redes vehiculares, incluyendo su posterior validación y evaluación mediante el análisis de resultados con NumPy, Pandas, Matplotlib y Scikit-learn",
+        "Extensión del framework para integrar y evaluar algoritmos de gestión multicanal basados en control clásico, optimización convexa y modelos de Supervised y Reinforcement Learning."
       ]
     },
     {
-      "name": "Empresa",
-      "position": "Primer rol",
-      "location": "Ciudad",
-      "startDate": "2019-01",
-      "endDate": "2021-01",
+      "name": "Universidad Politécnica de Cartagena",
+      "position": "Becario en el departamento de Informática",
+      "location": "Cartagena",
+      "startDate": "2022-03",
+      "endDate": "2022-08",
       "highlights": [
-        "Responsabilidad principal de tu primer puesto.",
-        "Aprendizaje o contribución destacada."
+        "Desarrollo integral de aplicaciones Full Stack mediante React y Node.js para el ecosistema web universitario.",
+        "Gestión de incidencias y mantenimiento de la accesibilidad web en la red de portales de la universidad."
       ]
     }
   ],
   "education": [
     {
       "institution": "Universidad Politécnica de Cartagena",
-      "studyType": "Grado",
-      "area": "Ingeniería Telemática",
-      "startDate": "2018",
-      "endDate": "2023"
+      "studyType": "Doctorado",
+      "area": "Tecnologías de la Información y Comunicaciones",
+      "startDate": "2024-12",
+      "endDate": ""
     },
     {
       "institution": "Universidad Politécnica de Cartagena",
@@ -68,53 +66,51 @@
     },
     {
       "institution": "Universidad Politécnica de Cartagena",
-      "studyType": "Doctorado",
-      "area": "Tecnologías de la Información y Comunicaciones",
-      "startDate": "2024-12",
-      "endDate": ""
+      "studyType": "Grado",
+      "area": "Ingeniería Telemática",
+      "startDate": "2018-09",
+      "endDate": "2023-09"
     }
   ],
   "awards": [
-    {
-      "title": "Premio a la Excelencia Académica",
-      "date": "2022-06",
+        {
+      "title": "Premio extraordinario fin de máster en Ingeniería Telemática, curso 2023-2024",
+      "date": "2025-01",
       "awarder": "Universidad Politécnica de Cartagena",
-      "summary": "Reconocimiento al rendimiento académico excepcional durante el Grado en Ingeniería Telemática."
+      "summary": "Reconocimiento al rendimiento académico excepcional durante el Máster Universitario en Ingeniería Telemática.",
+      "url": "https://tablon.upct.es/anuncio/LQOgPv6yqr"
     },
     {
-      "title": "Beca de Investigación",
-      "date": "2023-09",
+      "title": "Premio extraordinario fin de grado en Ingeniería Telemática, curso 2022-2023",
+      "date": "2024-01",
       "awarder": "Universidad Politécnica de Cartagena",
-      "summary": "Beca otorgada para apoyar la investigación en optimización y control de tecnologías de acceso en redes vehiculares."
+      "summary": "Reconocimiento al rendimiento académico excepcional durante el Grado en Ingeniería Telemática.",
+      "url": "https://tablon.upct.es/anuncio/8EO0Bp3jW0"
     }
   ],
   "publications": [
     {
-      "name": "Optimización de Protocolos de Comunicación en Redes Vehiculares",
-      "publisher": "Revista Internacional de Telecomunicaciones",
-      "releaseDate": "2023-11",
-      "url": "https://example.com/publication1",
-      "summary": "Estudio sobre la optimización de protocolos de comunicación en entornos vehiculares, con enfoque en eficiencia y seguridad."
+      "name": "Evaluation of multichannel operation mechanisms for vehicular networks",
+      "publisher": "Vehicular Communications",
+      "releaseDate": "2025-12",
+      "url": "https://doi.org/10.1016/j.vehcom.2025.100978"
     },
     {
-      "name": "Control Adaptativo de Tecnologías de Acceso en Redes Vehiculares",
-      "publisher": "Conferencia Internacional de Redes y Comunicaciones",
-      "releaseDate": "2024-03",
-      "url": "https://example.com/publication2",
-      "summary": "Investigación sobre técnicas de control adaptativo para mejorar la calidad del servicio en redes vehiculares."
+      "name": "Evaluation of Advanced Broadcast Multichannel Mechanisms for Vehicular Networks",
+      "publisher": "Proceedings of the INTERNATIONAL SYMPOSIUM ON WIRELESS PERSONAL MULTIMEDIA COMMUNICATIONS",
+      "releaseDate": "2025",
+      "url": "https://doi.org/10.1109/wpmc67460.2025.11351251"
     }
   ],
   "skills": [
-    { "name": "Lenguajes", "keywords": ["Python", "C++", "Java", "JavaScript", "PHP", "MATLAB"] },
-    {"name": "Desarrollo Web", "keywords": ["Vue.js", "React", "Node.js"] },
-    { "name": "Bases de datos", "keywords": ["InfluxDB", "InterSystems Caché", "PostgreSQL", "MariaDB"] },
-    { "name": "Orquestación e Infraestructura", "keywords": ["Kubernetes", "Docker Swarm", "Apache Airflow"] },
-    { "name": "Data Science & ML", "keywords": ["NumPy", "Pandas", "Matplotlib", "Scikit-learn", "SciPy", "TensorFlow"] },
-    { "name": "Herramientas", "keywords": ["Git", "Linux"] }
+    { "name": "Orquestación e Infraestructura", "keywords": ["Kubernetes", "Docker Swarm", "Apache Airflow", "Git", "Linux"] },
+    { "name": "Data Science & ML", "keywords": ["NumPy", "Pandas", "Matplotlib", "Scikit-learn", "SciPy"] },
+    { "name": "Bases de datos", "keywords": ["InfluxDB", "PostgreSQL", "MariaDB"] },
+    { "name": "Lenguajes y Desarrollo Web", "keywords": ["Python", "C++", "Java", "JavaScript", "PHP", "MATLAB", "Vue.js", "Node.js", "React"] }
   ],
   "languages": [
     { "language": "Español", "fluency": "Nativo" },
-    { "language": "Inglés", "fluency": "Avanzado" }
+    { "language": "Inglés", "fluency": "B2" }
   ],
   "meta": { "theme": "felipe", "language": "es" }
 }

@@ -47,9 +47,16 @@ const esc = (s) =>
   );
 
 const yr = (d) => (d ? String(d).slice(0, 4) : "");
+// Meses abreviados (es). "YYYY-MM" -> "mmm. YYYY"; "YYYY" (sin mes) -> "YYYY".
+const MONTHS_ES = ["ene.", "feb.", "mar.", "abr.", "may.", "jun.", "jul.", "ago.", "sep.", "oct.", "nov.", "dic."];
+const fmtDate = (d) => {
+  if (!d) return "";
+  const m = String(d).match(/^(\d{4})-(\d{2})/);
+  return m ? `${MONTHS_ES[+m[2] - 1]} ${m[1]}` : yr(d);
+};
 const range = (start, end, present) => {
-  const s = yr(start);
-  const e = end ? yr(end) : present;
+  const s = fmtDate(start);
+  const e = end ? fmtDate(end) : present;
   return s ? `${s} — ${e}` : e;
 };
 const pad2 = (n) => String(n).padStart(2, "0");
@@ -155,7 +162,7 @@ function educationCards(items, present) {
     .map((e, i) =>
       infoCard(i, {
         date: range(e.startDate, e.endDate, present),
-        title: [e.studyType, e.area].filter(Boolean).join(" "),
+        title: [e.studyType, e.area].filter(Boolean).join(" en "),
         url: e.url,
         sub: e.institution,
       })
@@ -166,7 +173,7 @@ function educationCards(items, present) {
 function awardsCards(items) {
   return items
     .map((a, i) =>
-      infoCard(i, { date: yr(a.date), title: a.title, sub: a.awarder, text: a.summary })
+      infoCard(i, { date: fmtDate(a.date), title: a.title, url: a.url, sub: a.awarder, text: a.summary })
     )
     .join("");
 }
@@ -174,7 +181,7 @@ function awardsCards(items) {
 function certificatesCards(items) {
   return items
     .map((c, i) =>
-      infoCard(i, { date: yr(c.date), title: c.name, url: c.url, sub: c.issuer })
+      infoCard(i, { date: fmtDate(c.date), title: c.name, url: c.url, sub: c.issuer })
     )
     .join("");
 }
@@ -183,7 +190,7 @@ function publicationsCards(items) {
   return items
     .map((p, i) =>
       infoCard(i, {
-        date: [p.publisher, yr(p.releaseDate)].filter(Boolean).join(" · "),
+        date: [p.publisher, fmtDate(p.releaseDate)].filter(Boolean).join(" · "),
         title: p.name,
         url: p.url,
         text: p.summary,
